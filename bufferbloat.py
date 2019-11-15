@@ -80,7 +80,18 @@ class BBTopo(Topo):
         # interface names will change from s0-eth1 to newname-eth1.
         switch = self.addSwitch('s0')
 
-        # TODO: Add links with appropriate characteristics
+        hostNode = hosts[0]
+        networkNode = hosts[1]
+
+        #Set up link from host node to switch with bw_host bandwidth, and given delay and max queue size
+        #Do the same for the link from the network node to the switch but with bw_net bandwidth instead
+
+        #TODO: Check if we need max_queue_size for link from host to switch
+
+        #MN Doc. Template.: self.addLink(node1, node2, bw=10, delay='5ms', max_queue_size=1000, loss=10, use_htb=True)
+        delayStr = str(args.delay) + "ms"
+        self.addLink(hostNode, switch, bw=args.bw_host, delay=delayStr, max_queue_size=args.maxq)
+        self.addLink(networkNode, switch, bw=args.bw_net, delay=delayStr, max_queue_size=args.maxq)
 
 # Simple wrappers around monitoring utilities.  You are welcome to
 # contribute neatly written (using classes) monitoring scripts for
@@ -111,6 +122,9 @@ def start_iperf(net):
     server = h2.popen("iperf -s -w 16m")
     # TODO: Start the iperf client on h1.  Ensure that you create a
     # long lived TCP flow. You may need to redirect iperf's stdout to avoid blocking.
+    h1 = net.get('h1')  # get host 1 (hostNode)
+    #The below statement runs iperf client on h1 to h2's IP address, and gives
+    iperf_client = h1.popen("iperf -c %s -t %d" % (h2.IP(), args.time))
 
 def start_webserver(net):
     h1 = net.get('h1')
