@@ -90,7 +90,7 @@ class BBTopo(Topo):
 
         #MN Doc. Template.: self.addLink(node1, node2, bw=10, delay='5ms', max_queue_size=1000, loss=10, use_htb=True)
         delayStr = str(args.delay) + "ms"
-        self.addLink(hostNode, switch, bw=args.bw_host, delay=delayStr, max_queue_size=args.maxq)
+        self.addLink(hostNode, switch, bw=args.bw_host, delay=delayStr)
         self.addLink(networkNode, switch, bw=args.bw_net, delay=delayStr, max_queue_size=args.maxq)
 
 # Simple wrappers around monitoring utilities.  You are welcome to
@@ -173,9 +173,8 @@ def bufferbloat():
     # Depending on the order you add links to your network, this
     # number may be 1 or 2.  Ensure you use the correct number.
     #
-    # qmon = start_qmon(iface='s0-eth2',
-    #                  outfile='%s/q.txt' % (args.dir))
-    qmon = None
+    qmon = start_qmon(iface='s0-eth2',
+                  outfile='%s/q.txt' % (args.dir))
 
     # TODO: Start iperf, webservers, etc.
     # start_iperf(net)
