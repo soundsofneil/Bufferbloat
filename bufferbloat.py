@@ -86,8 +86,6 @@ class BBTopo(Topo):
         #Set up link from host node to switch with bw_host bandwidth, and given delay and max queue size
         #Do the same for the link from the network node to the switch but with bw_net bandwidth instead
 
-        #TODO: Check if we need max_queue_size for link from host to switch
-
         #MN Doc. Template.: self.addLink(node1, node2, bw=10, delay='5ms', max_queue_size=1000, loss=10, use_htb=True)
         delayStr = str(args.delay) + "ms"
         self.addLink(hostNode, switch, bw=args.bw_host, delay=delayStr)
@@ -123,7 +121,7 @@ def start_iperf(net):
     # TODO: Start the iperf client on h1.  Ensure that you create a
     # long lived TCP flow. You may need to redirect iperf's stdout to avoid blocking.
     h1 = net.get('h1')  # get host 1 (hostNode)
-    #The below statement runs iperf client on h1 to h2's IP address, and gives
+    #The below statement runs iperf client on h1 to h2's IP address, and gives time of args.time
     iperf_client = h1.popen("iperf -c %s -t %d" % (h2.IP(), args.time))
 
 def start_webserver(net):
@@ -144,7 +142,10 @@ def start_ping(net):
     # until stdout is read. You can avoid this by runnning popen.communicate() or
     # redirecting stdout
     h1 = net.get('h1')
-    popen = h1.popen("echo '' > %s/ping.txt"%(args.dir), shell=True)
+    h2 = net.get('h2')
+    #The below command sends a ping from h1 to h2 with interval wait time of 0.1 seconds so it will
+    #send 10 pings every 1 second and the STDOUT will go into the specified directory and create ping.txt
+    popen = h1.popen("ping -i 0.1 %s > %s/ping.txt"%(h2.IP, args.dir), shell=True)
 
 def bufferbloat():
     if not os.path.exists(args.dir):
