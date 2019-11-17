@@ -21,6 +21,7 @@ import termcolor as T
 import sys
 import os
 import math
+import numpy
 
 # TODO: Don't just read the TODO sections in this code.  Remember that
 # one of the goals of this assignment is for you to learn how to use
@@ -177,8 +178,11 @@ def bufferbloat():
     qmon = start_qmon(iface='s0-eth2',
                   outfile='%s/q.txt' % (args.dir))
 
-    # TODO: Start iperf, webservers, etc.
-    # start_iperf(net)
+    #Start iperf, webservers, ping.
+    start_webserver(net)
+    start_iperf(net)
+    start_ping(net)
+
 
     # Hint: The command below invokes a CLI which you can use to
     # debug.  It allows you to run arbitrary commands inside your
@@ -193,6 +197,9 @@ def bufferbloat():
     # spawned on host h1 (not from google!)
     # Hint: have a separate function to do this and you may find the
     # loop below useful.
+    h1 = net.get('h1')
+    h2 = net.get('h2')
+    #Long-lived flow starts from h2 to h1 so we will do the same order for the following
     start_time = time()
     while True:
         # do the measurement (say) 3 times.
@@ -203,9 +210,13 @@ def bufferbloat():
             break
         print "%.1fs left..." % (args.time - delta)
 
-    # TODO: compute average (and standard deviation) of the fetch
+    # Compute average (and standard deviation) of the fetch
     # times.  You don't need to plot them.  Just note it in your
     # README and explain.
+
+    #Printing average with division because it is more efficient than numpy
+    print("Average fetch time is: %f\n" % (sum(fetch_times) / float(len(fetch_times))))
+    print("Standard deviation of the fetch is: %f\n" % numpy.std(fetch_times))
 
     stop_tcpprobe()
     if qmon is not None:
