@@ -123,7 +123,7 @@ def start_iperf(net):
     # long lived TCP flow. You may need to redirect iperf's stdout to avoid blocking.
     h1 = net.get('h1')  # get host 1 (hostNode)
     #The below statement runs iperf client on h1 to h2's IP address, and gives time of args.time
-    client = h1.popen("iperf -c %s -t %d" % (h2.IP(), args.time))
+    client = h1.popen("iperf -c %s -t %s > %s/iperfstdout.txt" % (h2.IP(), args.time, args.dir), shell=True)
 
 def start_webserver(net):
     h1 = net.get('h1')
