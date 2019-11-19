@@ -205,7 +205,8 @@ def bufferbloat():
     while True:
         # do the measurement (say) 3 times.
         for _ in range(0,3):
-            output =  h2.popen("curl -o /dev/null -s -w %{time_total} %s/http/index.html" % h1.IP(), shell=True)
+            #When running the curl command to fetch a web page, please fetch webserver_ip_address/http/index.html.
+            output =  h2.popen("curl -o /dev/null -s -w %%{time_total} %s/http/index.html" % h1.IP(), shell=True)
             fetch_times.append(output.communicate()[0])
             sleep(5)
             now = time()
