@@ -178,9 +178,8 @@ def bufferbloat():
     qmon = start_qmon(iface='s0-eth2',
                   outfile='%s/q.txt' % (args.dir))
 
-    #Start iperf, webservers, ping.
+    #Start iperf, webservers, etc.
     start_iperf(net)
-    start_ping(net)
     start_webserver(net)
 
 
