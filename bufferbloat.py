@@ -190,7 +190,7 @@ def bufferbloat():
     #
     # CLI(net)
 
-    # TODO: measure the time it takes to complete webpage transfer
+    # Measure the time it takes to complete webpage transfer
     # from h1 to h2 (say) 3 times.  Hint: check what the following
     # command does: curl -o /dev/null -s -w %{time_total} google.com
     # Now use the curl command to fetch webpage from the webserver you
@@ -201,14 +201,18 @@ def bufferbloat():
     h2 = net.get('h2')
     #Long-lived flow starts from h2 to h1 so we will do the same order for the following
     start_time = time()
+    fetch_times = []
     while True:
         # do the measurement (say) 3 times.
-        sleep(1)
-        now = time()
-        delta = now - start_time
-        if delta > args.time:
-            break
-        print "%.1fs left..." % (args.time - delta)
+        for _ in range(0,3):
+            output =  h2.popen("curl -o /dev/null -s -w %{time_total} %s/http/index.html" % h1.IP(), shell=True)
+            fetch_times.append(output.communicate()[0])
+            sleep(5)
+            now = time()
+            delta = now - start_time
+            if delta > args.time:
+                break
+            print "%.1fs left..." % (args.time - delta)
 
     # Compute average (and standard deviation) of the fetch
     # times.  You don't need to plot them.  Just note it in your
