@@ -218,7 +218,8 @@ def bufferbloat():
     # README and explain.
 
     #Printing average with division because it is more efficient than numpy
-    averageFetch = sum(float(fetch_times)) / float(len(fetch_times))
+    fetch_times = map(float, fetch_times)
+    averageFetch = sum((fetch_times)) / float(len(fetch_times))
     print("Average fetch time is: %f\n" % averageFetch)
     print("Standard deviation of the fetch is: %f\n" % numpy.std(fetch_times))
 
