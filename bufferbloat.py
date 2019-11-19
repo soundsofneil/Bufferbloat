@@ -179,9 +179,9 @@ def bufferbloat():
                   outfile='%s/q.txt' % (args.dir))
 
     #Start iperf, webservers, ping.
-    start_webserver(net)
     start_iperf(net)
     start_ping(net)
+    start_webserver(net)
 
 
     # Hint: The command below invokes a CLI which you can use to
