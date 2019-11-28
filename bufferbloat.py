@@ -21,9 +21,9 @@ import termcolor as T
 import sys
 import os
 import math
-import numpy
+import helper
 
-# TODO: Don't just read the TODO sections in this code.  Remember that
+# Don't just read the TODO sections in this code.  Remember that
 # one of the goals of this assignment is for you to learn how to use
 # Mininet. :-)
 
@@ -123,7 +123,7 @@ def start_iperf(net):
     # long lived TCP flow. You may need to redirect iperf's stdout to avoid blocking.
     h1 = net.get('h1')  # get host 1 (hostNode)
     #The below statement runs iperf client on h1 to h2's IP address, and gives time of args.time
-    client = h1.popen("iperf -c %s -t %d > %s/iperfstdout.txt" % (h2.IP(), args.time, args.dir), shell=True)
+    client = h1.popen("iperf -c %s -t %d > %s/iperf.txt" % (h2.IP(), args.time, args.dir), shell=True)
 
 def start_webserver(net):
     h1 = net.get('h1')
@@ -200,12 +200,11 @@ def bufferbloat():
     h2 = net.get('h2')
     #Long-lived flow starts from h2 to h1 so we will do the same order for the following
     start_time = time()
-    fetch_times = []
+    flow_clock = []
     while True:
         # do the measurement (say) 3 times.
         #When running the curl command to fetch a web page, please fetch webserver_ip_address/http/index.html.
-        output =  h2.popen("curl -o /dev/null -s -w %%{time_total} %s/http/index.html" % h1.IP(), shell=True)
-        fetch_times.append(output.communicate()[0])
+        flow_clock = fetch_webpage(h1, h2, flow_clock)
         sleep(5)
         now = time()
         delta = now - start_time
@@ -217,11 +216,12 @@ def bufferbloat():
     # times.  You don't need to plot them.  Just note it in your
     # README and explain.
 
-    #Printing average with division because it is more efficient than numpy
-    fetch_times = map(float, fetch_times)
-    averageFetch = sum((fetch_times)) / float(len(fetch_times))
-    print("Average fetch time is: %f\n" % averageFetch)
-    print("Standard deviation of the fetch is: %f\n" % numpy.std(fetch_times))
+    #Printing average with helper.py
+    flow_clock = map(float, flow_clock) #adding this line just in case
+    average_fetch = helper.avg(flow_clock)
+    std_dev_fetch = helper.stdev(flow_clock)
+    print("Average fetch time is: %f\n" % average_fetch)
+    print("Standard deviation of the fetch is: %f\n" % std_dev_fetch)
 
     stop_tcpprobe()
     if qmon is not None:
@@ -230,6 +230,12 @@ def bufferbloat():
     # Ensure that all processes you create within Mininet are killed.
     # Sometimes they require manual killing.
     Popen("pgrep -f webserver.py | xargs kill -9", shell=True).wait()
+
+def fetch_webpage(h1, h2, flow_clock):
+    for _ in range(3):
+        output = h2.popen("curl -o /dev/null -s -w %%{time_total} %s/http/index.html" % h1.IP(), shell=True)
+        flow_clock.append(output.communicate()[0])
+    return flow_clock
 
 if __name__ == "__main__":
     bufferbloat()
