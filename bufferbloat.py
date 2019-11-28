@@ -146,7 +146,7 @@ def start_ping(net):
     h2 = net.get('h2')
     #The below command sends a ping from h1 to h2 with interval wait time of 0.1 seconds so it will
     #send 10 pings every 1 second and the STDOUT will go into the specified directory and create ping.txt
-    popen = h1.popen('ping -i 0.1 %s > %s/ping.txt'%(h2.IP, args.dir), shell=True)
+    popen = h1.popen("ping -i 0.1 %s > %s/ping.txt" % (h2.IP(), args.dir), shell=True)
 
 def bufferbloat():
     if not os.path.exists(args.dir):
